@@ -420,14 +420,14 @@ void BGFX_DrawTriangle(int16_t x0, int16_t y0, int16_t x1, int16_t y1,
 
 /**************************************************************************/
 /*!
-   @brief     Draw a triangle with color-fill
-    @param    x0  Vertex #0 x coordinate
-    @param    y0  Vertex #0 y coordinate
-    @param    x1  Vertex #1 x coordinate
-    @param    y1  Vertex #1 y coordinate
-    @param    x2  Vertex #2 x coordinate
-    @param    y2  Vertex #2 y coordinate
-    @param    color 16-bit 5-6-5 Color to fill/draw with
+   @brief   Draw a triangle with color-fill
+    @param  x0  Vertex #0 x coordinate
+    @param  y0  Vertex #0 y coordinate
+    @param  x1  Vertex #1 x coordinate
+    @param  y1  Vertex #1 y coordinate
+    @param  x2  Vertex #2 x coordinate
+    @param  y2  Vertex #2 y coordinate
+    @param  color 16-bit 5-6-5 Color to fill/draw with
     @param  Display Structure to display parameters and functions
 */
 /**************************************************************************/
@@ -525,18 +525,18 @@ void BGFX_DrawTriangleFill(uint16_t x0, uint16_t y0, uint16_t x1,
 
 
 
-// Draw a character
 /**************************************************************************/
 /*!
-   @brief   Draw a single character
-    @param    x   Bottom left corner x coordinate
-    @param    y   Bottom left corner y coordinate
-    @param    c   The 8-bit font-indexed character (likely ascii)
-    @param    color 16-bit 5-6-5 Color to draw chraracter with
-    @param    bg 16-bit 5-6-5 Color to fill background with (if same as color,
+    @brief  Draw a single character
+    @param  x   Bottom left corner x coordinate
+    @param  y   Bottom left corner y coordinate
+    @param  c   The 8-bit font-indexed character (likely ascii)
+    @param  color 16-bit 5-6-5 Color to draw chraracter with
+    @param  bg 16-bit 5-6-5 Color to fill background with (if same as color,
    no background)
-    @param    size_x  Font magnification level in X-axis, 1 is 'original' size
-    @param    size_y  Font magnification level in Y-axis, 1 is 'original' size
+    @param  size_x  Font magnification level in X-axis, 1 is 'original' size
+    @param  size_y  Font magnification level in Y-axis, 1 is 'original' size
+    @param  Display Structure to display parameters and functions
 */
 /**************************************************************************/
 void BGFX_DrawChar(uint16_t x, uint16_t y, uint8_t c, uint16_t color,
@@ -649,6 +649,38 @@ void BGFX_DrawChar(uint16_t x, uint16_t y, uint8_t c, uint16_t color,
 //    endWrite();
 //
 //  } // End classic vs custom font
+}
+
+
+
+/**************************************************************************/
+/*!
+    @brief  Draw a single character
+    @param  X   Bottom left corner x coordinate
+    @param  Y   Bottom left corner y coordinate
+    @param  Buffer   The 8-bit font-indexed text (likely ascii)
+    @param  Length   Size in characters of text
+    @param  Color 16-bit 5-6-5 Color to draw chraracter with
+    @param  Bgc 16-bit 5-6-5 Color to fill background with (if same as color,
+   no background)
+    @param  SizeX  Font magnification level in X-axis, 1 is 'original' size
+    @param  SizeY  Font magnification level in Y-axis, 1 is 'original' size
+    @param  Display Structure to display parameters and functions
+*/
+/**************************************************************************/
+void BGFX_SendString(uint16_t X, uint16_t Y, uint8_t *Buffer, uint32_t Length,
+    uint16_t Color, uint16_t Bgc, uint8_t SizeX, uint8_t SizeY,
+    BGFX_Parameters_t Display)
+{
+  uint32_t i;
+
+  if (Display.GfxFont == NULL) {
+    for(i = 0; i< Length; i++){
+      BGFX_DrawChar(X, Y, *(Buffer + i), Color, Bgc, SizeX,
+          SizeY, Display);
+      X += SizeX * 6; // Advance x one char
+    }
+  }
 }
 
 

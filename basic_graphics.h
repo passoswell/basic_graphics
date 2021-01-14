@@ -26,14 +26,7 @@ typedef struct
   uint16_t WidthPixelsOnWrite; /*!< Number of horizontal pixels in a byte */
   uint16_t HeightPixelsOnWrite; /*!< Number of vertical pixels in a byte */
   BGFX_ColorScheme_t ColorScheme; /*!< Color configuration on display */
-  int16_t CursorX;      /*!< x location to start print()ing text */
-  int16_t CursorY;      /*!< y location to start print()ing text */
-  uint16_t TextColor;   /*!< 16-bit background color for print() */
-  uint16_t TextbgColor; /*!< 16-bit text color for print() */
-  uint8_t TextSizeX;    /*!< Desired magnification in X-axis of text to print() */
-  uint8_t TextSizeY;    /*!< Desired magnification in Y-axis of text to print() */
   uint8_t Rotation;     /*!< Display rotation (0 thru 3) */
-  uint8_t Wrap;         /*!< If set, 'wrap' text at right edge of display */
   uint8_t Cp437;        /*!< If set, use correct CP437 charset (default is off) */
   BGFXfont *GfxFont;     /*!< Pointer to special font */
 
@@ -78,5 +71,8 @@ void BGFX_DrawTriangleFill(uint16_t x0, uint16_t y0, uint16_t x1,
 void BGFX_DrawChar(uint16_t x, uint16_t y, uint8_t c, uint16_t color,
     uint16_t bg, uint8_t size_x, uint8_t size_y, BGFX_Parameters_t Display);
 
+void BGFX_SendString(uint16_t X, uint16_t Y, uint8_t *Buffer, uint32_t Length,
+    uint16_t Color, uint16_t Bgc, uint8_t SizeX, uint8_t SizeY,
+    BGFX_Parameters_t Display);
 
 #endif /* BASIC_GRAPHICS_H */
