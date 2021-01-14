@@ -67,5 +67,12 @@ void BGFX_DrawCircle(uint16_t x0, uint16_t y0, uint16_t r, uint16_t color,
 void BGFX_DrawCircleFill(uint16_t x0, uint16_t y0, uint16_t r, uint16_t color,
     BGFX_Parameters_t Display);
 
+void BGFX_DrawTriangle(int16_t x0, int16_t y0, int16_t x1, int16_t y1,
+    int16_t x2, int16_t y2, uint16_t color, BGFX_Parameters_t Display);
+
+void BGFX_DrawTriangleFill(uint16_t x0, uint16_t y0, uint16_t x1,
+    uint16_t y1, uint16_t x2, uint16_t y2, uint16_t color,
+    BGFX_Parameters_t Display);
+
 
 #endif /* BASIC_GRAPHICS_H */
