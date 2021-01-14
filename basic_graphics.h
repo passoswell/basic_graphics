@@ -3,6 +3,7 @@
 
 
 #include <stdint.h>
+#include "gfxfont.h"
 
 
 typedef enum
@@ -34,7 +35,7 @@ typedef struct
   uint8_t Rotation;     /*!< Display rotation (0 thru 3) */
   uint8_t Wrap;         /*!< If set, 'wrap' text at right edge of display */
   uint8_t Cp437;        /*!< If set, use correct CP437 charset (default is off) */
-  //GFXfont *gfxFont;   /*!< Pointer to special font */
+  BGFXfont *GfxFont;     /*!< Pointer to special font */
 
   uint8_t *Buffer;
   void (*DrawPixel)(uint16_t x, uint16_t y, uint16_t color); /*!< Writes pixel
@@ -73,6 +74,9 @@ void BGFX_DrawTriangle(int16_t x0, int16_t y0, int16_t x1, int16_t y1,
 void BGFX_DrawTriangleFill(uint16_t x0, uint16_t y0, uint16_t x1,
     uint16_t y1, uint16_t x2, uint16_t y2, uint16_t color,
     BGFX_Parameters_t Display);
+
+void BGFX_DrawChar(uint16_t x, uint16_t y, uint8_t c, uint16_t color,
+    uint16_t bg, uint8_t size_x, uint8_t size_y, BGFX_Parameters_t Display);
 
 
 #endif /* BASIC_GRAPHICS_H */
