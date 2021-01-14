@@ -62,6 +62,9 @@ void BGFX_DrawPixel_8(uint16_t x, uint16_t y, uint16_t color,
 void BGFX_DrawPixel_16(uint16_t x, uint16_t y, uint16_t color,
         BGFX_Parameters_t Display);
 
+void BGFX_DrawCircleHelper(uint16_t x0, uint16_t y0, uint16_t r,
+    uint8_t cornername, uint16_t color, BGFX_Parameters_t Display);
+
 void BGFX_DrawCircleFillHelper(uint16_t x0, uint16_t y0, uint16_t r,
     uint8_t corners, int16_t delta, uint16_t color, BGFX_Parameters_t Display);
 
@@ -231,6 +234,72 @@ void BGFX_DrawRectFill(uint16_t x, uint16_t y, uint16_t w, uint16_t h,
 
 /**************************************************************************/
 /*!
+    @brief  Draw a rounded rectangle with no fill color
+    @param  x   Top left corner x coordinate
+    @param  y   Top left corner y coordinate
+    @param  w   Width in pixels
+    @param  h   Height in pixels
+    @param  r   Radius of corner rounding
+    @param  color 16-bit 5-6-5 Color to draw with
+    @param  Display Structure to display parameters and functions
+*/
+/**************************************************************************/
+void BGFX_DrawRoundRect(int16_t x, int16_t y, int16_t w, int16_t h,
+    int16_t r, uint16_t color, BGFX_Parameters_t Display)
+{
+  int16_t max_radius;
+
+  max_radius = ((w < h) ? w : h) / 2; // 1/2 minor axiss
+  if (r > max_radius){
+    r = max_radius;
+  }
+  // smarter version
+  BGFX_DrawLine(x + r, y        , x - r + w, y        , color, Display); // Top
+  BGFX_DrawLine(x + r, y + h - 1, x - r + w, y + h - 1, color, Display); // Bottom
+  BGFX_DrawLine(x        , y + r, x        , y + h - r, color, Display); // Left
+  BGFX_DrawLine(x + w - 1, y + r, x + w - 1, y + h - r, color, Display); // Right
+  // draw four corners
+  BGFX_DrawCircleHelper(x + r, y + r, r, 1, color, Display);
+  BGFX_DrawCircleHelper(x + w - r - 1, y + r, r, 2, color, Display);
+  BGFX_DrawCircleHelper(x + w - r - 1, y + h - r - 1, r, 4, color, Display);
+  BGFX_DrawCircleHelper(x + r, y + h - r - 1, r, 8, color, Display);
+}
+
+
+
+/**************************************************************************/
+/*!
+    @brief  Draw a rounded rectangle with fill color
+    @param  x   Top left corner x coordinate
+    @param  y   Top left corner y coordinate
+    @param  w   Width in pixels
+    @param  h   Height in pixels
+    @param  r   Radius of corner rounding
+    @param  color 16-bit 5-6-5 Color to draw/fill with
+    @param  Display Structure to display parameters and functions
+*/
+/**************************************************************************/
+void BGFX_DrawRoundRectFill(int16_t x, int16_t y, int16_t w, int16_t h,
+    int16_t r, uint16_t color, BGFX_Parameters_t Display) {
+  int16_t max_radius;
+
+  max_radius = ((w < h) ? w : h) / 2; // 1/2 minor axis
+  if (r > max_radius){
+    r = max_radius;
+  }
+  // smarter version
+  BGFX_DrawRectFill(x + r, y, w - 2 * r, h, color, Display);
+  // draw four corners
+  BGFX_DrawCircleFillHelper(x + w - r - 1, y + r, r, 1, h - 2 * r - 1, color,
+      Display);
+  BGFX_DrawCircleFillHelper(x + r, y + r, r, 2, h - 2 * r - 1, color,
+      Display);
+}
+
+
+
+/**************************************************************************/
+/*!
     @brief  Draw a circle outline
     @param  x0   Center-point x coordinate
     @param  y0   Center-point y coordinate
@@ -322,6 +391,9 @@ void BGFX_DrawCircleFill(uint16_t x0, uint16_t y0, uint16_t r, uint16_t color,
 
 
 
+
+
+
 /**************************************************************************/
 /*!
     @brief  Draw a pixel to a framebuffer
@@ -387,6 +459,55 @@ void BGFX_DrawPixel_16(uint16_t x, uint16_t y, uint16_t color,
   Display.Buffer[x + y * Display.WIDTH] = color;
 }
 
+
+
+/**************************************************************************/
+/*!
+    @brief  Quarter-circle drawer, used to do circles and roundrects
+    @param  x0   Center-point x coordinate
+    @param  y0   Center-point y coordinate
+    @param  r   Radius of circle
+    @param  cornername  Mask bit #1 or bit #2 to indicate which quarters of
+            the circle we're doing
+    @param  color 16-bit 5-6-5 Color to draw with
+    @param  Display Structure to display parameters and functions
+*/
+/**************************************************************************/
+void BGFX_DrawCircleHelper(uint16_t x0, uint16_t y0, uint16_t r,
+    uint8_t cornername, uint16_t color, BGFX_Parameters_t Display) {
+  int16_t f = 1 - r;
+  int16_t ddF_x = 1;
+  int16_t ddF_y = -2 * r;
+  uint16_t x = 0;
+  uint16_t y = r;
+
+  while (x < y) {
+    if (f >= 0) {
+      y--;
+      ddF_y += 2;
+      f += ddF_y;
+    }
+    x++;
+    ddF_x += 2;
+    f += ddF_x;
+    if (cornername & 0x4) {
+      BGFX_DrawPixel(x0 + x, y0 + y, color, Display);
+      BGFX_DrawPixel(x0 + y, y0 + x, color, Display);
+    }
+    if (cornername & 0x2) {
+      BGFX_DrawPixel(x0 + x, y0 - y, color, Display);
+      BGFX_DrawPixel(x0 + y, y0 - x, color, Display);
+    }
+    if (cornername & 0x8) {
+      BGFX_DrawPixel(x0 - y, y0 + x, color, Display);
+      BGFX_DrawPixel(x0 - x, y0 + y, color, Display);
+    }
+    if (cornername & 0x1) {
+      BGFX_DrawPixel(x0 - y, y0 - x, color, Display);
+      BGFX_DrawPixel(x0 - x, y0 - y, color, Display);
+    }
+  }
+}
 
 
 
