@@ -43,11 +43,27 @@ void BGFX_DrawPixel(uint16_t x, uint16_t y, uint16_t color,
 {
   int16_t t;
 
+  /* Updating rotation setting, in case it was changed outside this library*/
+  switch (Display.Rotation) {
+  case 0:
+  case 2:
+    Display.Width = Display.WIDTH;
+    Display.Height = Display.HEIGHT;
+    break;
+  case 1:
+  case 3:
+    Display.Width = Display.HEIGHT;
+    Display.Height = Display.WIDTH;
+    break;
+  }
+
+  /* Testing if point is out of border */
   if ((x >= Display.Width) || (y >= Display.Height))
   {
     return;
   }
 
+  /* Applying rotation */
   switch (Display.Rotation) {
   case 1:
     t = x;
@@ -66,9 +82,11 @@ void BGFX_DrawPixel(uint16_t x, uint16_t y, uint16_t color,
   }
 
   if (Display.DrawPixel != NULL) {
+    /* Using user supplied function, if supplied */
     Display.DrawPixel(x, y, color);
   }else if(Display.Buffer != NULL){
 
+    /* Using one of the default functions */
     switch(Display.ColorScheme){
     case BGFX_MONOCHROMATIC:
       BGFX_DrawPixel_01(x, y, color, Display);
