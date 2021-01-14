@@ -75,4 +75,6 @@ void BGFX_SendString(uint16_t X, uint16_t Y, uint8_t *Buffer, uint32_t Length,
     uint16_t Color, uint16_t Bgc, uint8_t SizeX, uint8_t SizeY,
     BGFX_Parameters_t Display);
 
+void BGFX_SetRotation(uint8_t Rotation, BGFX_Parameters_t *Display);
+
 #endif /* BASIC_GRAPHICS_H */

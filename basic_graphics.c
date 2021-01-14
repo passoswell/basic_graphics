@@ -685,6 +685,33 @@ void BGFX_SendString(uint16_t X, uint16_t Y, uint8_t *Buffer, uint32_t Length,
 
 
 
+
+
+/**************************************************************************/
+/*!
+    @brief  Set rotation setting for display, no image resizing performed
+    @param  Rotation   0 thru 3 corresponding to 4 cardinal rotations
+    @param  Display Structure to display parameters and functions
+*/
+/**************************************************************************/
+void BGFX_SetRotation(uint8_t Rotation, BGFX_Parameters_t *Display)
+{
+  Display->Rotation = (Rotation & 3);
+  switch (Display->Rotation) {
+  case 0:
+  case 2:
+    Display->Width = Display->WIDTH;
+    Display->Height = Display->HEIGHT;
+    break;
+  case 1:
+  case 3:
+    Display->Width = Display->HEIGHT;
+    Display->Height = Display->WIDTH;
+    break;
+  }
+}
+
+
 /**************************************************************************/
 /*!
     @brief  Draw a pixel to a framebuffer
