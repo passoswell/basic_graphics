@@ -55,11 +55,11 @@
  */
 typedef enum
 {
-  BGFX_MONOCHROMATIC = 0,
-  BGFX_8BITS,
-  BGFX_16BITS,
-  BGFX_24BITS,
-  BGFX_RGB,
+  BGFX_MONOCHROMATIC = 0, /*!< Single color display */
+  BGFX_8BITS,             /*!< 8-bits color display */
+  BGFX_16BITS,            /*!< 16-bits color display */
+  BGFX_24BITS,            /*!< 24-bits color display */
+  BGFX_RGB,               /*!< RGB color display */
 }BGFX_ColorScheme_t;
 
 
@@ -80,7 +80,8 @@ typedef struct
                              (default is off) */
   BGFXfont *GfxFont;    /*!< Pointer to special font, not implemented */
 
-  uint8_t *Buffer;
+  void *Buffer;         /*!< Pointer to a buffer of any type */
+
   void (*DrawPixel)(uint16_t x, uint16_t y, uint16_t color); /*!< Writes pixel
                                                                  to a buffer */
 }BGFX_Parameters_t;

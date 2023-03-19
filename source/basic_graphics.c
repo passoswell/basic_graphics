@@ -94,6 +94,9 @@ void BGFX_DrawPixel(uint16_t x, uint16_t y, uint16_t color,
     case BGFX_8BITS:
       BGFX_DrawPixel_8(x, y, color, Display);
       break;
+    case BGFX_16BITS:
+      BGFX_DrawPixel_16(x, y, color, Display);
+      break;
     default:
       BGFX_DrawPixel_01(x, y, color, Display);
       break;
@@ -502,7 +505,9 @@ void BGFX_DrawPixel_01(uint16_t x, uint16_t y, uint16_t color,
     /* There are 8 horizontal pixels in one byte */
   }
 
-  ptr = &Display.Buffer[(x / 8) * Display.WIDTH + y];
+  //ptr = &Display.Buffer[(x / 8) * Display.WIDTH + y];
+  ptr = (uint8_t *)Display.Buffer;
+  ptr += (x / 8) * Display.WIDTH + y;
 
   if (color){
     *ptr |= 1 << (x & 7);
@@ -524,7 +529,8 @@ void BGFX_DrawPixel_01(uint16_t x, uint16_t y, uint16_t color,
 void BGFX_DrawPixel_8(uint16_t x, uint16_t y, uint16_t color,
     BGFX_Parameters_t Display)
 {
-  Display.Buffer[x + y * Display.WIDTH] = color & 0xFF;
+  uint8_t *p = (uint8_t *)Display.Buffer;
+  p[x + y * Display.WIDTH] = color & 0xFF;
 }
 
 
@@ -540,7 +546,8 @@ void BGFX_DrawPixel_8(uint16_t x, uint16_t y, uint16_t color,
 void BGFX_DrawPixel_16(uint16_t x, uint16_t y, uint16_t color,
     BGFX_Parameters_t Display)
 {
-  Display.Buffer[x + y * Display.WIDTH] = color;
+  uint16_t *p = (uint16_t *)Display.Buffer;
+  p[x + y * Display.WIDTH] = color;
 }
 
 
