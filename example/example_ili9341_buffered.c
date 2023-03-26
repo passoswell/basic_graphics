@@ -1,4 +1,5 @@
 #include <math.h>
+#include <string.h>
 #include <stdint.h>
 #include <stdlib.h>
 #include <stddef.h>
@@ -12,7 +13,13 @@ void DISP_WritePixels(uint8_t *Buffer, uint16_t Size)
   /* Your display code here */
 }
 
+/* Clears the buffer */
+void DISP_ClearBuffer(uint16_t *Buffer, uint32_t Size, uint16_t color)
+{
+  for(int i=0; i<Size; i++) {Buffer[i] = color;}
+}
 
+/* Blocking delay */
 void Delay(void)
 {
   /* Change for your system's delay */
@@ -45,7 +52,7 @@ void main(void)
 
 
   /* Cleaning the buffer */
-  for(int i=0; i<sizeof(buffer); i++) {buffer[i] = background_color;}
+  DISP_ClearBuffer(buffer, buffer_size, background_color);
 
   /* Drawing a few lines to the buffer */
   BGFX_DrawLine(1, 1, 1, 62, main_color, BGFX_1);     /* Top    */
@@ -63,7 +70,7 @@ void main(void)
 
 
   /* Cleaning the buffer, a different background color */
-  for(int i=0; i<buffer_size; i++) {buffer[i] = main_color;}
+  DISP_ClearBuffer(buffer, buffer_size, main_color);
 
   /* Drawing a few lines to the buffer with different color */
   BGFX_DrawLine(1, 1, 1, 62, background_color, BGFX_1);     /* Top    */
@@ -81,7 +88,7 @@ void main(void)
 
 
   /* Cleaning the buffer */
-  for(int i=0; i<buffer_size; i++) {buffer[i] = background_color;}
+  DISP_ClearBuffer(buffer, buffer_size, background_color);
 
   /* Drawing rectangles */
   BGFX_DrawRect(25, 0, 10, 64, main_color, BGFX_1);
@@ -94,7 +101,7 @@ void main(void)
 
 
   /* Cleaning the buffer */
-  for(int i=0; i<buffer_size; i++) {buffer[i] = background_color;}
+  DISP_ClearBuffer(buffer, buffer_size, background_color);
 
   /* Drawing round rectangles */
   BGFX_DrawRoundRect(0, 0, 50, 64, 10, main_color, BGFX_1);
@@ -107,7 +114,7 @@ void main(void)
 
 
   /* Cleaning the buffer */
-  for(int i=0; i<buffer_size; i++) {buffer[i] = background_color;}
+  DISP_ClearBuffer(buffer, buffer_size, background_color);
 
   /* Drawing triangles */
   BGFX_DrawTriangle(25, 0, 50, 63, 0, 63, main_color, BGFX_1);
@@ -120,7 +127,7 @@ void main(void)
 
 
   /* Cleaning the buffer */
-  for(int i=0; i<buffer_size; i++) {buffer[i] = background_color;}
+  DISP_ClearBuffer(buffer, buffer_size, background_color);
 
   /* Drawing circles */
   BGFX_DrawCircleFill(60, 32, 30, main_color, BGFX_1);
@@ -136,7 +143,7 @@ void main(void)
 
 
   /* Cleaning the buffer */
-  for(int i=0; i<buffer_size; i++) {buffer[i] = background_color;}
+  DISP_ClearBuffer(buffer, buffer_size, background_color);
 
   /* Hello world message */
   BGFX_SendString(0, 0, (uint8_t*)"Hello world", 11, main_color, background_color, 1, 1, BGFX_1);
@@ -152,20 +159,43 @@ void main(void)
 
 
   /* Plotting a sine wave */
-  while(1)
+  /* Cleaning the space where the plot will be positioned */
+  BGFX_DrawRectFill(0, 25, 128, 25, main_color, BGFX_1);
+
+
+  /* Pre-computing sine table */
+  uint16_t sine_table[128];
+  for(uint32_t i = 0; i < 128; i++)
   {
-    /* Cleaning the space where the plot will be positioned */
-    BGFX_DrawRectFill(0, 25, 128, 25, main_color, BGFX_1);
-    for(uint32_t i = 0; i < 128; i++){
-      float auxf = sinf((float)(i + counter)/5.0);
-      auxf *= 12;
-      auxf += 12;
-      auxf += 25;
-      uint16_t aux16 = auxf;
-      BGFX_DrawPixel(i, aux16, background_color, BGFX_1);
-    }
-    counter += 2;
-    DISP_WritePixels(buffer, buffer_size);
+    float auxf = sinf((float)(i + counter)*0.2);
+    auxf *= 12;
+    auxf += 37;
+    sine_table[i] = auxf;
   }
 
+  uint8_t head = 0;
+  uint8_t tail = 127;
+  while(1)
+  {
+    for(uint32_t i = 0; i < 128; i++)
+    {
+      if(head+i < 128)
+      {
+        BGFX_DrawPixel(i, sine_table[head+i], background_color, BGFX_1);
+      }else
+      {
+        BGFX_DrawPixel(i, sine_table[(head+i)-128], background_color, BGFX_1);
+      }
+      if(tail+i < 128)
+      {
+        BGFX_DrawPixel(i, sine_table[tail+i], main_color, BGFX_1);
+      }else
+      {
+        BGFX_DrawPixel(i, sine_table[(tail+i)-128], main_color, BGFX_1);
+      }
+    }
+    head++;  if(head >= 128){head = 0;}
+    tail++;  if(tail >= 128){tail = 0;}
+    DISP_WritePixels(buffer, buffer_size);
+  }
 }
